@@ -5,6 +5,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Colores del logo de La Barra Beer. */
+@theme {
+  --color-marca: #ff914c;
+  --color-marca-claro: #ffa86f;
+  --color-marca-oscuro: #e77f40;
+  --color-cafe: #813201;
+}
+
 /* Interfaz oscura: el bar trabaja de noche. */
 :root {
   color-scheme: dark;
@@ -13,4 +21,15 @@
 body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
+}
+
+/* Quita las flechas de los campos numéricos: se usan botones − / + propios. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

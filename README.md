@@ -37,6 +37,7 @@ Las migraciones están en `supabase/migrations/` y se aplican **en este orden**:
 3. `20261007200200_rpc.sql` — operaciones atómicas (ventas, pagos, turnos…)
 4. `20261007200300_seguridad.sql` — RLS y permisos
 5. `20261007200400_realtime.sql` — tablas en tiempo real
+6. `20261008100000_inventario_lotes.sql` — entradas y conteos de varios productos a la vez (Fase 2)
 
 **Opción A — integración Supabase ↔ GitHub (recomendada).** En Supabase →
 *Project Settings → Integrations → GitHub*, verifica que el repositorio esté
@@ -141,3 +142,32 @@ supabase/migrations/, seed.sql
 | `anular_cuenta(cuenta_id, motivo, devolver_stock?)` | admin | Anula y devuelve stock |
 | `registrar_movimiento(producto_id, tipo, cantidad, motivo?)` | staff / admin | Entrada, merma (staff) o ajuste (admin) |
 | `ajustar_stock(producto_id, stock_real, motivo)` | admin | Ajuste por conteo físico |
+| `registrar_entrada_lote(items, motivo?)` | staff | Entrada de mercancía de varios productos |
+| `ajustar_stock_lote(items, motivo?)` | admin | Conteo físico de varios productos |
+
+## Pantallas
+
+### Productos (`/productos`, solo admin)
+- Lista por categoría con precio, costo y % de ganancia.
+- Flechas ▲▼ para ordenar dentro de la categoría (es el orden en que aparecen al vender).
+- Interruptor para activar/desactivar en un toque (un producto inactivo no se puede vender).
+- Crear/editar: nombre, categoría, precio, costo, stock mínimo y "no tiene stock
+  propio" (descuenta N unidades de otro producto, como los six packs).
+- Un producto con ventas o movimientos no se borra: se desactiva.
+
+### Inventario (`/inventario`)
+- Stock por categoría con estado (OK, Bajo, Agotado, Revisar conteo si es negativo),
+  buscador y filtro de alertas. Se actualiza en vivo.
+- **Entrada de mercancía** (caja y admin): varios productos a la vez, con proveedor
+  o nota opcional. Ideal para cargar el stock inicial.
+- **Merma** (caja y admin): producto, cantidad y motivo (botones rápidos: se rompió,
+  se derramó, vencido, cortesía, consumo del personal).
+- **Conteo físico** y **Ajustar** (solo admin): se escribe lo que realmente hay y el
+  sistema registra la diferencia como ajuste.
+- **Historial** (admin): todos los movimientos, filtrables por producto (incluye los
+  six packs del producto base), tipo y fechas. Caja solo ve los de su turno.
+- Admin ve además el valor del inventario a costo.
+
+### En el celular
+- Menú desplegable (☰) con botones grandes.
+- Se puede "Agregar a pantalla de inicio" y abre como app con el logo.

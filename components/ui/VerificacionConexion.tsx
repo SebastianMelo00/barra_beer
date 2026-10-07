@@ -43,7 +43,7 @@ export function VerificacionConexion() {
         {mesas.map((m) => (
           <div
             key={m.id}
-            className={`rounded-xl border p-4 text-center font-semibold ${m.es_barra ? 'border-amber-400/40 text-amber-300' : 'border-zinc-800'}`}
+            className={`rounded-xl border p-4 text-center font-semibold ${m.es_barra ? 'border-marca/40 text-marca' : 'border-zinc-800'}`}
           >
             {m.nombre}
           </div>

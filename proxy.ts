@@ -1,7 +1,8 @@
 // Protección de rutas por rol (en Next.js 16 "middleware.ts" pasó a llamarse
 // "proxy.ts"; hace lo mismo). Es una primera barrera para la navegación: la
 // seguridad real está en la base de datos (RLS + funciones RPC).
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { supabaseKey, supabaseUrl } from '@/lib/supabase/config';
 import { actualizarSesion } from '@/lib/supabase/proxy';
 import { inicioPorRol } from '@/lib/rutas';
 
@@ -12,6 +13,14 @@ function empiezaCon(path: string, prefijos: string[]) {
 }
 
 export async function proxy(request: NextRequest) {
+  if (!supabaseUrl || !supabaseKey) {
+    return new NextResponse(
+      'La Barra Beer: faltan las variables NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. ' +
+        'Agrégalas en Vercel → Settings → Environment Variables (o en .env.local) y vuelve a desplegar.',
+      { status: 500, headers: { 'content-type': 'text/plain; charset=utf-8' } },
+    );
+  }
+
   const { userId, rol, continuar, redirigir } = await actualizarSesion(request);
   const path = request.nextUrl.pathname;
   const enLogin = path === '/login';

@@ -5,10 +5,14 @@ export const ZONA_HORARIA = 'America/Bogota';
 /** 4000 → "$ 4.000"; -500 → "-$ 500". */
 export function pesos(valor: number | null | undefined): string {
   const n = Math.round(valor ?? 0);
-  const miles = Math.abs(n)
+  return `${n < 0 ? '-' : ''}$ ${miles(Math.abs(n))}`;
+}
+
+/** 24000 → "24.000" (sin signo de pesos). */
+export function miles(valor: number): string {
+  return Math.round(valor)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-  return `${n < 0 ? '-' : ''}$ ${miles}`;
 }
 
 /** Lee lo que escribe una persona: "4.000", "$ 4000", "4,000" → 4000. Vacío o inválido → null. */
@@ -17,6 +21,11 @@ export function leerPesos(texto: string): number | null {
   if (!limpio) return null;
   const n = Number.parseInt(limpio, 10);
   return Number.isSafeInteger(n) ? n : null;
+}
+
+/** Cantidad con signo: 5 → "+5", -3 → "−3". */
+export function conSigno(n: number): string {
+  return n > 0 ? `+${n}` : n < 0 ? `−${Math.abs(n)}` : '0';
 }
 
 const fmtHora = new Intl.DateTimeFormat('es-CO', {
@@ -72,17 +81,31 @@ export function hoyBogota(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: ZONA_HORARIA }).format(new Date());
 }
 
-/** Rango [inicio, fin) en ISO para un día "AAAA-MM-DD" de Bogotá (UTC-5, sin horario de verano). */
-export function rangoDiaBogota(dia: string): { desde: string; hasta: string } {
-  const desde = new Date(`${dia}T00:00:00-05:00`);
-  const hasta = new Date(desde.getTime() + 24 * 60 * 60 * 1000);
-  return { desde: desde.toISOString(), hasta: hasta.toISOString() };
+/** Inicio de un día "AAAA-MM-DD" de Bogotá en ISO (Colombia es UTC-5 todo el año). */
+export function inicioDiaBogota(dia: string): string {
+  return new Date(`${dia}T00:00:00-05:00`).toISOString();
+}
+
+/** Fin (exclusivo) de un día "AAAA-MM-DD" de Bogotá en ISO. */
+export function finDiaBogota(dia: string): string {
+  return new Date(new Date(`${dia}T00:00:00-05:00`).getTime() + 24 * 60 * 60 * 1000).toISOString();
 }
 
 /** Mensaje legible de un error de Supabase/RPC. */
 export function mensajeError(error: unknown): string {
-  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
-    return error.message;
+  if (!error || typeof error !== 'object') return 'Ocurrió un error inesperado. Intenta de nuevo.';
+  const { code, message } = error as { code?: string; message?: string };
+  const texto = typeof message === 'string' ? message : '';
+
+  if (texto.includes('Failed to fetch') || texto.includes('NetworkError')) {
+    return 'Sin conexión. Revisa el internet e intenta de nuevo.';
   }
-  return 'Ocurrió un error inesperado. Intenta de nuevo.';
+  if (code === '23505') return 'Ya existe un producto con ese nombre.';
+  if (code === '23503') {
+    return 'No se puede borrar porque ya tiene ventas, movimientos o productos que dependen de él. Desactívalo en su lugar.';
+  }
+  if (texto.startsWith('permission denied') || texto.includes('row-level security')) {
+    return 'No tienes permiso para esta acción.';
+  }
+  return texto || 'Ocurrió un error inesperado. Intenta de nuevo.';
 }
