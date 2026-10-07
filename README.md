@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# La Barra Beer
 
-## Getting Started
+Sistema de mesas, ventas e inventario para un bar pequeño en Bogotá. La dueña
+(admin) ve en tiempo real, desde el celular, cómo van las ventas, las mesas y el
+inventario; la persona de caja (operador) trabaja desde un computador.
 
-First, run the development server:
+- **Stack:** Next.js 16 (App Router) + TypeScript + Tailwind CSS 4 + Supabase
+  (Postgres, Auth, Realtime, RLS).
+- **Moneda:** COP sin decimales (`$ 4.000`). **Zona horaria:** America/Bogota.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Puesta en marcha
+
+### 1. Variables de entorno
+
+Copia `.env.example` como `.env.local` y llena los valores desde Supabase →
+**Project Settings → API Keys** (la *publishable key* o la *anon key*) y
+**Data API** (la URL del proyecto):
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<tu-proyecto>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Agrega **las mismas dos variables** en Vercel → *Settings → Environment
+Variables* (Production, Preview y Development) y vuelve a desplegar.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Nunca uses la `service_role` / *secret key* en este proyecto: todo el código
+> que llega al navegador usa la llave pública, y la seguridad la ponen RLS y las
+> funciones RPC de la base de datos.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. Base de datos
 
-## Learn More
+Las migraciones están en `supabase/migrations/` y se aplican **en este orden**:
 
-To learn more about Next.js, take a look at the following resources:
+1. `20261007200000_esquema.sql` — tablas
+2. `20261007200100_funciones_base.sql` — roles, triggers de inventario
+3. `20261007200200_rpc.sql` — operaciones atómicas (ventas, pagos, turnos…)
+4. `20261007200300_seguridad.sql` — RLS y permisos
+5. `20261007200400_realtime.sql` — tablas en tiempo real
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Opción A — integración Supabase ↔ GitHub (recomendada).** En Supabase →
+*Project Settings → Integrations → GitHub*, verifica que el repositorio esté
+conectado, que *Supabase directory* sea `.` (la carpeta `supabase/` está en la
+raíz) y que **Deploy to production** esté activado con la rama `main`. Así, cada
+push a `main` aplica las migraciones nuevas automáticamente.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Opción B — a mano.** Si no tienes la integración (o *Deploy to production*
+está apagado), abre el **SQL Editor** y ejecuta el contenido de cada archivo,
+uno por uno, en el orden de arriba. Si usas esta opción, no actives luego
+*Deploy to production* sin revisarlo: intentaría crear las tablas otra vez.
 
-## Deploy on Vercel
+**En ambos casos**, el seed **no** se aplica solo en producción: ejecuta
+`supabase/seed.sql` en el SQL Editor (se puede correr varias veces sin duplicar).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Usuarios
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Supabase → *Authentication → Sign In / Providers*: deja **Email** activo y
+   **apaga "Allow new users to sign up"** (nadie debe poder registrarse solo).
+2. *Authentication → Users → Add user → Create new user*: crea a la dueña y a
+   la persona de caja con correo y contraseña, marcando **Auto Confirm User**.
+3. En el SQL Editor, asigna nombre y rol (cambia correos y nombres):
+
+```sql
+insert into public.perfiles (id, nombre, rol)
+select id, 'Nombre de la dueña', 'admin' from auth.users where email = 'duena@correo.com'
+on conflict (id) do update set nombre = excluded.nombre, rol = excluded.rol, activo = true;
+
+insert into public.perfiles (id, nombre, rol)
+select id, 'Nombre de caja', 'operador' from auth.users where email = 'caja@correo.com'
+on conflict (id) do update set nombre = excluded.nombre, rol = excluded.rol, activo = true;
+```
+
+Para quitarle el acceso a alguien sin perder su historial:
+`update public.perfiles set activo = false where id = (select id from auth.users where email = '...');`
+(No borres usuarios que ya tienen ventas registradas: la base de datos lo impide
+para no perder el historial.)
+
+### 4. Correr en local
+
+```bash
+npm install
+npm run dev
+```
+
+Abre http://localhost:3000.
+
+## Cómo está organizado
+
+```
+app/
+  login/                     ingreso
+  (operador)/mesas, turno, inventario    pantallas de caja (computador)
+  (admin)/dashboard, productos, turnos   pantallas de la dueña (celular)
+components/ui/               componentes propios (botones, campos, marco)
+lib/supabase/                clientes de navegador, servidor y proxy
+lib/types.ts, lib/formato.ts tipos de las tablas, formato COP y fechas
+proxy.ts                     protección de rutas por rol
+supabase/migrations/, seed.sql
+```
+
+> **`proxy.ts` en vez de `middleware.ts`:** en Next.js 16 el archivo
+> `middleware.ts` quedó obsoleto y se llama `proxy.ts`. Hace exactamente lo
+> mismo: refresca la sesión y redirige según el rol.
+
+## Seguridad
+
+- La app solo puede **leer** tablas. Toda escritura pasa por funciones RPC
+  (`security definer`) que validan el rol y las reglas de negocio en una sola
+  transacción. Única excepción: la admin edita productos y mesas directamente.
+- `productos.stock_actual` no se puede editar ni desde la app ni desde el SQL
+  Editor: solo cambia con movimientos de inventario (trigger).
+- El operador solo ve los datos del **turno abierto**; la admin ve todo el
+  historial. El feed de actividad es solo para la admin.
+- Un usuario sin perfil (o desactivado) no ve ni puede hacer nada.
+
+| Regla | Dónde se hace cumplir |
+| --- | --- |
+| Operador no edita productos/precios | RLS `admin edita productos` |
+| Operador no anula cuentas | RPC `anular_cuenta` → `exigir_admin()` |
+| Operador no hace ajustes de inventario | RPC `registrar_movimiento` / `ajustar_stock` |
+| Operador no ve turnos anteriores | RLS de turnos, cuentas, ítems, pagos, movimientos |
+| Stock nunca se edita directo | permisos por columna + trigger `productos_validar` |
+| Sin turno abierto no hay ventas | `exigir_turno_abierto()` en cada RPC |
+| No pagar más que el saldo / no dejar saldo negativo | RPC + `check (pagado <= total)` |
+
+## Funciones RPC
+
+| Función | Quién | Qué hace |
+| --- | --- | --- |
+| `abrir_turno(base_caja)` | staff | Abre el turno (solo uno a la vez) |
+| `resumen_turno(turno_id?)` | staff | Totales por método y cuadre (operador: solo el abierto) |
+| `cerrar_turno(efectivo_contado, notas?)` | staff | Cierra con cuadre de caja |
+| `crear_cuenta(mesa_id, nombre?)` | staff | Nueva cuenta en una mesa ("Cuenta 1", "Cuenta 2"…) |
+| `renombrar_cuenta(cuenta_id, nombre)` | staff | Cambia el nombre de la cuenta |
+| `agregar_item(cuenta_id, producto_id, cantidad?)` | staff | Agrega y descuenta inventario |
+| `quitar_item(item_id, motivo, cantidad?)` | staff | Quita, devuelve stock y audita |
+| `mover_item(item_id, cuenta_destino, cantidad?, motivo?)` | staff | Mueve entre cuentas de la misma mesa |
+| `registrar_pago(cuenta_id, monto, metodo, cerrar?)` | staff | Cobro, abono o parte de una división |
+| `cerrar_cuenta(cuenta_id)` | staff | Cierra una cuenta con saldo $ 0 o vacía |
+| `venta_rapida(items, metodo)` | staff | Venta sin mesa en un paso |
+| `anular_cuenta(cuenta_id, motivo, devolver_stock?)` | admin | Anula y devuelve stock |
+| `registrar_movimiento(producto_id, tipo, cantidad, motivo?)` | staff / admin | Entrada, merma (staff) o ajuste (admin) |
+| `ajustar_stock(producto_id, stock_real, motivo)` | admin | Ajuste por conteo físico |
