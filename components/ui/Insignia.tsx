@@ -3,12 +3,12 @@ import type { ReactNode } from 'react';
 export type ColorInsignia = 'verde' | 'amarillo' | 'rojo' | 'gris' | 'marca' | 'azul';
 
 const COLORES: Record<ColorInsignia, string> = {
-  verde: 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
-  amarillo: 'bg-amber-400/15 text-amber-200 ring-amber-400/30',
-  rojo: 'bg-rose-500/15 text-rose-300 ring-rose-500/30',
-  gris: 'bg-zinc-800 text-zinc-300 ring-zinc-700',
-  marca: 'bg-marca/15 text-marca ring-marca/30',
-  azul: 'bg-sky-500/15 text-sky-300 ring-sky-500/30',
+  verde: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  amarillo: 'bg-amber-50 text-amber-800 ring-amber-200',
+  rojo: 'bg-rose-50 text-rose-700 ring-rose-200',
+  gris: 'bg-suave text-tenue ring-borde',
+  marca: 'bg-marca/15 text-cafe ring-marca/40',
+  azul: 'bg-sky-50 text-sky-700 ring-sky-200',
 };
 
 export function Insignia({ color = 'gris', children }: { color?: ColorInsignia; children: ReactNode }) {

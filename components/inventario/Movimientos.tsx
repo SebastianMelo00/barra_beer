@@ -115,15 +115,15 @@ export function Movimientos({
       ) : null}
 
       {error ? <Aviso tipo="error">{error}</Aviso> : null}
-      {!datos && !error ? <p className="text-zinc-400">Cargando movimientos…</p> : null}
+      {!datos && !error ? <p className="text-tenue">Cargando movimientos…</p> : null}
       {datos && filas.length === 0 ? (
-        <p className="rounded-2xl border border-zinc-800 p-6 text-center text-zinc-400">
+        <p className="rounded-2xl border border-borde p-6 text-center text-tenue">
           {esAdmin ? 'No hay movimientos con estos filtros.' : 'Aún no hay movimientos en este turno.'}
         </p>
       ) : null}
 
       {filas.length ? (
-        <ul className="divide-y divide-zinc-800 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
+        <ul className="divide-y divide-borde overflow-hidden rounded-2xl border border-borde bg-superficie">
           {filas.map((m) => {
             const derivado = m.stock_producto_id !== m.producto_id;
             const detalle = m.cuenta
@@ -133,14 +133,14 @@ export function Movimientos({
               : null;
             return (
               <li key={m.id} className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 px-3 py-2.5 sm:grid-cols-[9rem_6.5rem_1fr_5rem_6rem]">
-                <span className="text-xs text-zinc-400 sm:text-sm">{esAdmin ? fechaHora(m.creado_en) : hora(m.creado_en)}</span>
+                <span className="text-xs text-tenue sm:text-sm">{esAdmin ? fechaHora(m.creado_en) : hora(m.creado_en)}</span>
                 <span className="justify-self-end sm:justify-self-start">
                   <Insignia color={TIPO_MOVIMIENTO[m.tipo].color}>{TIPO_MOVIMIENTO[m.tipo].texto}</Insignia>
                 </span>
                 <span className="min-w-0">
                   <span className="font-semibold">{nombreProducto.get(m.producto_id) ?? `#${m.producto_id}`}</span>
                   {derivado ? (
-                    <span className="text-xs text-zinc-400">
+                    <span className="text-xs text-tenue">
                       {' '}
                       ({conSigno(m.stock_cantidad)} {nombreProducto.get(m.stock_producto_id)})
                     </span>
@@ -150,17 +150,17 @@ export function Movimientos({
                       <Insignia color="rojo">sin stock</Insignia>
                     </span>
                   ) : null}
-                  <span className="block truncate text-xs text-zinc-400">
+                  <span className="block truncate text-xs text-tenue">
                     {[nombreUsuario.get(m.usuario_id ?? ''), detalle, m.motivo].filter(Boolean).join(' · ')}
                   </span>
                 </span>
                 <span
-                  className={`text-right text-lg font-bold tabular-nums ${m.cantidad > 0 ? 'text-emerald-300' : 'text-rose-300'}`}
+                  className={`text-right text-lg font-bold tabular-nums ${m.cantidad > 0 ? 'text-emerald-700' : 'text-rose-600'}`}
                 >
                   {conSigno(m.cantidad)}
                 </span>
-                <span className="text-right text-xs text-zinc-400 sm:text-sm">
-                  quedan <strong className="text-zinc-200">{m.stock_resultante}</strong>
+                <span className="text-right text-xs text-tenue sm:text-sm">
+                  quedan <strong className="text-texto">{m.stock_resultante}</strong>
                 </span>
               </li>
             );

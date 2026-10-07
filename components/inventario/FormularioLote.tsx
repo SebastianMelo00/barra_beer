@@ -5,6 +5,7 @@ import { Aviso } from '@/components/ui/Aviso';
 import { Boton } from '@/components/ui/Boton';
 import { Campo } from '@/components/ui/Campo';
 import { CampoCantidad } from '@/components/ui/CampoCantidad';
+import { ImagenProducto } from '@/components/ui/ImagenProducto';
 import { useNotificar } from '@/components/ui/Notificaciones';
 import { conSigno, mensajeError } from '@/lib/formato';
 import { agruparPorCategoria, coincide, esBase } from '@/lib/inventario';
@@ -99,23 +100,24 @@ export function FormularioLote({
         {grupos.map(({ categoria, items }) => (
           <div key={categoria}>
             {soloProductoId ? null : (
-              <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-marca">{categoria}</h3>
+              <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-cafe">{categoria}</h3>
             )}
-            <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
+            <ul className="divide-y divide-borde rounded-xl border border-borde">
               {items.map((p) => {
                 const n = cantidades[p.id] ?? null;
                 const diferencia = modo === 'conteo' && n !== null ? n - p.stock_actual : null;
                 return (
                   <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2">
+                    <ImagenProducto producto={p} tamano={36} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{p.nombre}</p>
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-tenue">
                         En sistema: {p.stock_actual}
-                        {modo === 'entrada' && n ? <span className="text-emerald-300"> → quedará en {p.stock_actual + n}</span> : null}
+                        {modo === 'entrada' && n ? <span className="text-emerald-700"> → quedará en {p.stock_actual + n}</span> : null}
                         {diferencia !== null && diferencia !== 0 ? (
-                          <span className={diferencia > 0 ? 'text-emerald-300' : 'text-rose-300'}> · ajuste {conSigno(diferencia)}</span>
+                          <span className={diferencia > 0 ? 'text-emerald-700' : 'text-rose-600'}> · ajuste {conSigno(diferencia)}</span>
                         ) : null}
-                        {diferencia === 0 ? <span className="text-zinc-500"> · coincide</span> : null}
+                        {diferencia === 0 ? <span className="text-tenue"> · coincide</span> : null}
                       </p>
                     </div>
                     <CampoCantidad
@@ -135,8 +137,8 @@ export function FormularioLote({
 
       {error ? <Aviso tipo="error">{error}</Aviso> : null}
 
-      <div className="sticky -bottom-4 -mx-5 -mb-4 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 bg-zinc-950 px-5 py-3">
-        <p className="text-sm text-zinc-300">
+      <div className="sticky -bottom-4 -mx-5 -mb-4 flex flex-wrap items-center justify-between gap-3 border-t border-borde bg-superficie px-5 py-3">
+        <p className="text-sm text-texto">
           {modo === 'entrada'
             ? `${filas.length} producto(s) · ${totalUnidades} unidades`
             : `${filas.length} contado(s) · ${conCambio.length} con diferencia`}

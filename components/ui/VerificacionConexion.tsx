@@ -31,7 +31,7 @@ export function VerificacionConexion() {
   }, []);
 
   if (error) return <Aviso tipo="error">Error al leer datos: {error}</Aviso>;
-  if (!mesas || !productos) return <p className="text-zinc-400">Conectando con Supabase…</p>;
+  if (!mesas || !productos) return <p className="text-tenue">Conectando con Supabase…</p>;
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,17 +43,17 @@ export function VerificacionConexion() {
         {mesas.map((m) => (
           <div
             key={m.id}
-            className={`rounded-xl border p-4 text-center font-semibold ${m.es_barra ? 'border-marca/40 text-marca' : 'border-zinc-800'}`}
+            className={`rounded-xl border p-4 text-center font-semibold ${m.es_barra ? 'border-marca/40 text-cafe' : 'border-borde'}`}
           >
             {m.nombre}
           </div>
         ))}
       </div>
-      <ul className="grid gap-1 text-sm text-zinc-300 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-1 text-sm text-texto sm:grid-cols-2 lg:grid-cols-3">
         {productos.map((p) => (
-          <li key={p.id} className="flex justify-between gap-2 rounded-lg bg-zinc-900 px-3 py-2">
+          <li key={p.id} className="flex justify-between gap-2 rounded-lg bg-superficie px-3 py-2">
             <span>
-              <span className="text-zinc-500">{p.categoria} · </span>
+              <span className="text-tenue">{p.categoria} · </span>
               {p.nombre}
             </span>
             <span className="tabular-nums">{pesos(p.precio_venta)}</span>

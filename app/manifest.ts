@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Mesas, ventas e inventario de La Barra Beer',
     start_url: '/',
     display: 'standalone',
-    background_color: '#09090b',
-    theme_color: '#09090b',
+    background_color: '#faf6f0',
+    theme_color: '#faf6f0',
     lang: 'es-CO',
     icons: [
       { src: '/icono-192.png', sizes: '192x192', type: 'image/png' },

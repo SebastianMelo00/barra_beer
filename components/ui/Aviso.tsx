@@ -3,10 +3,10 @@ import type { ReactNode } from 'react';
 type Tipo = 'error' | 'advertencia' | 'exito' | 'info';
 
 const ESTILOS: Record<Tipo, string> = {
-  error: 'border-rose-500/40 bg-rose-500/10 text-rose-200',
-  advertencia: 'border-amber-400/40 bg-amber-400/10 text-amber-100',
-  exito: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200',
-  info: 'border-zinc-700 bg-zinc-900 text-zinc-300',
+  error: 'border-rose-200 bg-rose-50 text-rose-800',
+  advertencia: 'border-amber-200 bg-amber-50 text-amber-900',
+  exito: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+  info: 'border-borde bg-superficie text-texto',
 };
 
 export function Aviso({ tipo = 'info', children }: { tipo?: Tipo; children: ReactNode }) {

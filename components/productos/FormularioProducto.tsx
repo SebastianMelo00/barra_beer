@@ -5,8 +5,10 @@ import { Aviso } from '@/components/ui/Aviso';
 import { Boton } from '@/components/ui/Boton';
 import { Campo, Selector } from '@/components/ui/Campo';
 import { CampoPesos } from '@/components/ui/CampoPesos';
+import { ImagenProducto } from '@/components/ui/ImagenProducto';
 import { useNotificar } from '@/components/ui/Notificaciones';
 import { mensajeError, pesos } from '@/lib/formato';
+import { IMAGENES_PRODUCTOS } from '@/lib/imagenes';
 import { esBase } from '@/lib/inventario';
 import { crearCliente } from '@/lib/supabase/cliente';
 import type { Producto } from '@/lib/types';
@@ -38,6 +40,8 @@ export function FormularioProducto({
   const [costo, setCosto] = useState<number | null>(producto?.costo ?? null);
   const [stockMinimo, setStockMinimo] = useState(String(producto?.stock_minimo ?? 0));
   const [activo, setActivo] = useState(producto?.activo ?? true);
+  const [imagen, setImagen] = useState<string | null>(producto?.imagen ?? null);
+  const [eligiendoImagen, setEligiendoImagen] = useState(false);
   const [descuenta, setDescuenta] = useState(producto?.descuenta_de != null);
   const [baseId, setBaseId] = useState(producto?.descuenta_de ? String(producto.descuenta_de) : '');
   const [factor, setFactor] = useState(String(producto?.factor_descuento ?? 6));
@@ -71,6 +75,7 @@ export function FormularioProducto({
       costo,
       stock_minimo: descuenta ? 0 : minimo,
       activo,
+      imagen,
       descuenta_de: descuenta ? Number(baseId) : null,
       factor_descuento: descuenta ? fac : 1,
       ...(!producto || producto.categoria !== cat ? { orden: ordenAlFinal(productos, cat, producto?.id) } : {}),
@@ -104,6 +109,41 @@ export function FormularioProducto({
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-4">
+      <div className="flex items-start gap-3">
+        <ImagenProducto producto={{ nombre: nombre || '?', imagen }} tamano={72} />
+        <div className="flex flex-1 flex-col gap-1">
+          <span className="text-sm font-medium text-texto">Imagen</span>
+          <div className="flex flex-wrap gap-2">
+            <Boton variante="secundario" tamano="md" onClick={() => setEligiendoImagen((v) => !v)}>
+              {eligiendoImagen ? 'Cerrar' : imagen ? 'Cambiar imagen' : 'Elegir imagen'}
+            </Boton>
+            {imagen ? (
+              <Boton variante="fantasma" tamano="md" onClick={() => setImagen(null)}>
+                Quitar
+              </Boton>
+            ) : null}
+          </div>
+        </div>
+      </div>
+      {eligiendoImagen ? (
+        <div className="grid max-h-64 grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-borde bg-suave p-2 sm:grid-cols-6">
+          {IMAGENES_PRODUCTOS.map((img) => (
+            <button
+              key={img.ruta}
+              type="button"
+              title={img.nombre}
+              onClick={() => {
+                setImagen(img.ruta);
+                setEligiendoImagen(false);
+              }}
+              className={`grid place-items-center rounded-lg p-1 ${imagen === img.ruta ? 'bg-marca/30 ring-2 ring-marca' : 'hover:bg-suave-2'}`}
+            >
+              <ImagenProducto producto={{ nombre: img.nombre, imagen: img.ruta }} tamano={56} />
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <Campo etiqueta="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required data-autofocus maxLength={60} />
 
       <Campo
@@ -129,7 +169,7 @@ export function FormularioProducto({
           onCambio={setCosto}
           ayuda={
             margen !== null ? (
-              <span className={margen < 0 ? 'text-rose-300' : 'text-emerald-300'}>
+              <span className={margen < 0 ? 'text-rose-600' : 'text-emerald-700'}>
                 Ganancia {pesos(margen)} ({Math.round((margen / (precio ?? 1)) * 100)}%)
               </span>
             ) : undefined
@@ -137,7 +177,7 @@ export function FormularioProducto({
         />
       </div>
 
-      <label className="flex items-start gap-3 rounded-xl border border-zinc-800 p-3">
+      <label className="flex items-start gap-3 rounded-xl border border-borde p-3">
         <input
           type="checkbox"
           checked={descuenta}
@@ -147,7 +187,7 @@ export function FormularioProducto({
         />
         <span className="text-sm">
           <span className="font-semibold">No tiene stock propio</span>
-          <span className="block text-zinc-400">
+          <span className="block text-tenue">
             {esBaseDeOtros
               ? 'Otros productos descuentan de este, así que debe tener stock propio.'
               : 'Al venderlo se descuentan unidades de otro producto (ej. Six pack Poker descuenta 6 de Poker).'}
@@ -193,8 +233,8 @@ export function FormularioProducto({
       </label>
 
       {producto && esBase(producto) ? (
-        <p className="text-sm text-zinc-400">
-          Stock actual: <strong className="text-zinc-200">{producto.stock_actual}</strong>. El stock se cambia desde
+        <p className="text-sm text-tenue">
+          Stock actual: <strong className="text-texto">{producto.stock_actual}</strong>. El stock se cambia desde
           Inventario (entradas, mermas o ajustes).
         </p>
       ) : null}

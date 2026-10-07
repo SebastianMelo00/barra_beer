@@ -36,6 +36,7 @@ export type Producto = {
   descuenta_de: number | null;
   factor_descuento: number;
   orden: number;
+  imagen: string | null;
   creado_en: string;
 };
 
@@ -135,6 +136,28 @@ export type Actividad = {
   turno_id: number | null;
   usuario_id: string | null;
   creado_en: string;
+};
+
+// Vista turnos_resumen (historial de turnos).
+export type TurnoResumen = {
+  id: number;
+  operador_id: string;
+  operador: string | null;
+  inicio: string;
+  fin: string | null;
+  estado: EstadoTurno;
+  base_caja: number;
+  efectivo_esperado: number | null;
+  efectivo_contado: number | null;
+  diferencia: number | null;
+  notas: string | null;
+  total_efectivo: number;
+  total_daviplata: number;
+  total_bre_b: number;
+  total_pagos: number;
+  cuentas_pagadas: number;
+  cuentas_anuladas: number;
+  items_eliminados: number;
 };
 
 // Respuesta de las RPC resumen_turno y cerrar_turno.

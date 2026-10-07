@@ -11,6 +11,7 @@ import { crearCliente } from '@/lib/supabase/cliente';
 export function useCarga<T>(cargar: () => Promise<T>) {
   const [datos, setDatos] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cargado, setCargado] = useState(false); // true tras la primera carga exitosa
   const cargarRef = useRef(cargar);
   const pedido = useRef(0);
 
@@ -25,6 +26,7 @@ export function useCarga<T>(cargar: () => Promise<T>) {
       // Si llegó una respuesta más nueva mientras tanto, se descarta esta.
       if (id !== pedido.current) return;
       setDatos(resultado);
+      setCargado(true);
       setError(null);
     } catch (e) {
       if (id === pedido.current) setError(mensajeError(e));
@@ -35,7 +37,7 @@ export function useCarga<T>(cargar: () => Promise<T>) {
     void recargar();
   }, [recargar]);
 
-  return { datos, error, recargar };
+  return { datos, error, cargado, recargar };
 }
 
 /**

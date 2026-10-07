@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Aviso } from '@/components/ui/Aviso';
 import { Boton } from '@/components/ui/Boton';
 import { Campo } from '@/components/ui/Campo';
+import { ImagenProducto } from '@/components/ui/ImagenProducto';
 import { Insignia } from '@/components/ui/Insignia';
 import { Modal } from '@/components/ui/Modal';
 import { useNotificar } from '@/components/ui/Notificaciones';
@@ -72,7 +73,7 @@ export function PanelProductos() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Productos</h1>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-tenue">
             {productos.length} productos{inactivos ? ` · ${inactivos} inactivos` : ''}. Los precios nuevos aplican a lo
             que se agregue desde ahora.
           </p>
@@ -89,7 +90,7 @@ export function PanelProductos() {
           className="min-w-56 flex-1"
           type="search"
         />
-        <label className="flex h-12 items-center gap-2 text-sm text-zinc-300">
+        <label className="flex h-12 items-center gap-2 text-sm text-texto">
           <input
             type="checkbox"
             checked={verInactivos}
@@ -101,13 +102,13 @@ export function PanelProductos() {
       </div>
 
       {error ? <Aviso tipo="error">{error}</Aviso> : null}
-      {!datos && !error ? <p className="text-zinc-400">Cargando productos…</p> : null}
-      {datos && grupos.length === 0 ? <p className="text-zinc-400">No hay productos que coincidan.</p> : null}
+      {!datos && !error ? <p className="text-tenue">Cargando productos…</p> : null}
+      {datos && grupos.length === 0 ? <p className="text-tenue">No hay productos que coincidan.</p> : null}
 
       {grupos.map(({ categoria, items }) => (
         <div key={categoria} className="flex flex-col gap-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-marca">{categoria}</h2>
-          <ul className="flex flex-col divide-y divide-zinc-800 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-cafe">{categoria}</h2>
+          <ul className="flex flex-col divide-y divide-borde overflow-hidden rounded-2xl border border-borde bg-superficie">
             {items.map((p, i) => {
               const base = p.descuenta_de ? porId.get(p.descuenta_de) : undefined;
               const margen = p.costo !== null && p.precio_venta > 0 ? p.precio_venta - p.costo : null;
@@ -119,7 +120,7 @@ export function PanelProductos() {
                       aria-label={`Subir ${p.nombre}`}
                       disabled={i === 0 || ocupado || !!busqueda}
                       onClick={() => mover(p, -1)}
-                      className="grid h-6 w-8 place-items-center rounded text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 disabled:opacity-20"
+                      className="grid h-6 w-8 place-items-center rounded text-tenue hover:bg-suave hover:text-texto disabled:opacity-20"
                     >
                       ▲
                     </button>
@@ -128,7 +129,7 @@ export function PanelProductos() {
                       aria-label={`Bajar ${p.nombre}`}
                       disabled={i === items.length - 1 || ocupado || !!busqueda}
                       onClick={() => mover(p, 1)}
-                      className="grid h-6 w-8 place-items-center rounded text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 disabled:opacity-20"
+                      className="grid h-6 w-8 place-items-center rounded text-tenue hover:bg-suave hover:text-texto disabled:opacity-20"
                     >
                       ▼
                     </button>
@@ -137,11 +138,13 @@ export function PanelProductos() {
                   <button
                     type="button"
                     onClick={() => setEditando(p)}
-                    className="flex min-w-0 flex-1 flex-col items-start gap-1 rounded-lg px-1 py-1 text-left hover:bg-zinc-800/60 sm:flex-row sm:items-center sm:gap-4"
+                    className="flex min-w-0 flex-1 flex-col items-start gap-1 rounded-lg px-1 py-1 text-left hover:bg-suave sm:flex-row sm:items-center sm:gap-4"
                   >
-                    <span className="min-w-0 flex-1">
+                    <span className="flex min-w-0 flex-1 items-center gap-3">
+                      <ImagenProducto producto={p} tamano={44} />
+                      <span className="min-w-0 flex-1">
                       <span className="block truncate font-semibold">{p.nombre}</span>
-                      <span className="flex flex-wrap gap-1.5 pt-0.5 text-xs text-zinc-400">
+                      <span className="flex flex-wrap gap-1.5 pt-0.5 text-xs text-tenue">
                         {base ? (
                           <Insignia color="azul">
                             descuenta {p.factor_descuento} de {base.nombre}
@@ -151,11 +154,12 @@ export function PanelProductos() {
                         )}
                         {!p.activo ? <Insignia color="gris">inactivo</Insignia> : null}
                       </span>
+                      </span>
                     </span>
                     <span className="flex items-baseline gap-3 sm:flex-col sm:items-end sm:gap-0">
                       <span className="text-lg font-bold tabular-nums">{pesos(p.precio_venta)}</span>
                       {margen !== null ? (
-                        <span className={`text-xs tabular-nums ${margen < 0 ? 'text-rose-300' : 'text-zinc-400'}`}>
+                        <span className={`text-xs tabular-nums ${margen < 0 ? 'text-rose-600' : 'text-tenue'}`}>
                           costo {pesos(p.costo)} · gana {Math.round((margen / p.precio_venta) * 100)}%
                         </span>
                       ) : null}
@@ -168,10 +172,10 @@ export function PanelProductos() {
                     aria-checked={p.activo}
                     aria-label={`${p.activo ? 'Desactivar' : 'Activar'} ${p.nombre}`}
                     onClick={() => alternarActivo(p)}
-                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${p.activo ? 'bg-emerald-500' : 'bg-zinc-700'}`}
+                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${p.activo ? 'bg-emerald-500' : 'bg-zinc-300'}`}
                   >
                     <span
-                      className={`absolute top-1 size-5 rounded-full bg-white transition-all ${p.activo ? 'left-6' : 'left-1'}`}
+                      className={`absolute top-1 size-5 rounded-full bg-white shadow transition-all ${p.activo ? 'left-6' : 'left-1'}`}
                     />
                   </button>
                 </li>

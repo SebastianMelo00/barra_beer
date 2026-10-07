@@ -75,7 +75,7 @@ export function PanelInventario() {
       </div>
 
       {error ? <Aviso tipo="error">{error}</Aviso> : null}
-      {!datos && !error ? <p className="text-zinc-400">Cargando inventario…</p> : null}
+      {!datos && !error ? <p className="text-tenue">Cargando inventario…</p> : null}
 
       {datos ? (
         <>
@@ -84,9 +84,9 @@ export function PanelInventario() {
             <Resumen
               titulo="Stock bajo"
               valor={String(alertas.length - sinStock.length)}
-              color={alertas.length - sinStock.length ? 'text-amber-300' : undefined}
+              color={alertas.length - sinStock.length ? 'text-amber-600' : undefined}
             />
-            <Resumen titulo="Agotados o negativos" valor={String(sinStock.length)} color={sinStock.length ? 'text-rose-400' : undefined} />
+            <Resumen titulo="Agotados o negativos" valor={String(sinStock.length)} color={sinStock.length ? 'text-rose-600' : undefined} />
             {esAdmin ? (
               <Resumen
                 titulo="Inventario a costo"
@@ -105,7 +105,7 @@ export function PanelInventario() {
               aria-label="Buscar producto"
               className="min-w-56 flex-1"
             />
-            <div className="flex rounded-xl border border-zinc-700 p-1">
+            <div className="flex rounded-xl border border-borde p-1">
               {[
                 { valor: false, texto: 'Todos' },
                 { valor: true, texto: `Alertas (${alertas.length})` },
@@ -115,7 +115,7 @@ export function PanelInventario() {
                   type="button"
                   onClick={() => setSoloAlertas(op.valor)}
                   className={`rounded-lg px-4 py-2 text-sm font-semibold ${
-                    soloAlertas === op.valor ? 'bg-marca text-zinc-950' : 'text-zinc-300 hover:bg-zinc-800'
+                    soloAlertas === op.valor ? 'bg-marca text-texto' : 'text-texto hover:bg-suave'
                   }`}
                 >
                   {op.texto}
@@ -175,10 +175,10 @@ export function PanelInventario() {
 
 function Resumen({ titulo, valor, color, nota }: { titulo: string; valor: string; color?: string; nota?: string }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 px-4 py-3">
-      <p className="text-xs font-medium text-zinc-400">{titulo}</p>
-      <p className={`text-2xl font-bold tabular-nums ${color ?? 'text-zinc-100'}`}>{valor}</p>
-      {nota ? <p className="text-xs text-zinc-500">{nota}</p> : null}
+    <div className="rounded-2xl border border-borde bg-superficie px-4 py-3">
+      <p className="text-xs font-medium text-tenue">{titulo}</p>
+      <p className={`text-2xl font-bold tabular-nums ${color ?? 'text-texto'}`}>{valor}</p>
+      {nota ? <p className="text-xs text-tenue">{nota}</p> : null}
     </div>
   );
 }

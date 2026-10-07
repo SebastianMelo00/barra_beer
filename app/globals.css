@@ -5,17 +5,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Colores del logo de La Barra Beer. */
+/*
+ * Paleta de La Barra Beer: fondo crema claro, tarjetas blancas y los
+ * colores del logo (naranja para acciones, café para acentos de texto).
+ */
 @theme {
+  --color-fondo: #faf6f0;
+  --color-superficie: #ffffff;
+  --color-suave: #f4eee6;
+  --color-suave-2: #ebe3d7;
+  --color-borde: #e6ddd0;
+  --color-texto: #2a211b;
+  --color-tenue: #75695e;
+
   --color-marca: #ff914c;
-  --color-marca-claro: #ffa86f;
-  --color-marca-oscuro: #e77f40;
+  --color-marca-claro: #ffa66b;
+  --color-marca-oscuro: #f07a33;
   --color-cafe: #813201;
 }
 
-/* Interfaz oscura: el bar trabaja de noche. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {

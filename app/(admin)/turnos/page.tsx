@@ -1,5 +1,8 @@
-import { EnConstruccion } from '@/components/ui/EnConstruccion';
+import type { Metadata } from 'next';
+import { HistorialTurnos } from '@/components/turno/HistorialTurnos';
+
+export const metadata: Metadata = { title: 'Historial de turnos · La Barra Beer' };
 
 export default function TurnosPage() {
-  return <EnConstruccion titulo="Historial de turnos" fase={3} />;
+  return <HistorialTurnos />;
 }

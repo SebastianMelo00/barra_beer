@@ -5,6 +5,7 @@ import { Aviso } from '@/components/ui/Aviso';
 import { Boton } from '@/components/ui/Boton';
 import { Campo } from '@/components/ui/Campo';
 import { CampoCantidad } from '@/components/ui/CampoCantidad';
+import { ImagenProducto } from '@/components/ui/ImagenProducto';
 import { useNotificar } from '@/components/ui/Notificaciones';
 import { mensajeError } from '@/lib/formato';
 import { agruparPorCategoria, coincide, esBase } from '@/lib/inventario';
@@ -49,9 +50,10 @@ export function FormularioMerma({ productos, onListo }: { productos: Producto[];
     <form onSubmit={registrar} className="flex flex-col gap-4">
       {elegido ? (
         <div className="flex items-center justify-between gap-3 rounded-xl border border-marca/40 bg-marca/10 px-4 py-3">
-          <div>
+          <ImagenProducto producto={elegido} tamano={44} />
+          <div className="flex-1">
             <p className="font-semibold">{elegido.nombre}</p>
-            <p className="text-xs text-zinc-400">En sistema: {elegido.stock_actual}</p>
+            <p className="text-xs text-tenue">En sistema: {elegido.stock_actual}</p>
           </div>
           <Boton variante="fantasma" tamano="md" onClick={() => setProductoId(null)}>
             Cambiar
@@ -70,16 +72,17 @@ export function FormularioMerma({ productos, onListo }: { productos: Producto[];
           <div className="flex flex-col gap-3">
             {grupos.map(({ categoria, items }) => (
               <div key={categoria}>
-                <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-marca">{categoria}</h3>
+                <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-cafe">{categoria}</h3>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {items.map((p) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => setProductoId(p.id)}
-                      className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-3 text-left text-sm font-semibold hover:border-marca"
+                      className="flex items-center gap-2 rounded-xl border border-borde bg-superficie px-2 py-2 text-left text-sm font-semibold hover:border-marca"
                     >
-                      {p.nombre}
+                      <ImagenProducto producto={p} tamano={36} />
+                      <span className="min-w-0">{p.nombre}</span>
                     </button>
                   ))}
                 </div>
@@ -90,7 +93,7 @@ export function FormularioMerma({ productos, onListo }: { productos: Producto[];
       )}
 
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium text-zinc-300">Cantidad</span>
+        <span className="text-sm font-medium text-texto">Cantidad</span>
         <CampoCantidad etiqueta="Cantidad de la merma" valor={cantidad} onCambio={setCantidad} min={1} />
       </div>
 
@@ -102,7 +105,7 @@ export function FormularioMerma({ productos, onListo }: { productos: Producto[];
               type="button"
               onClick={() => setMotivo(m)}
               className={`rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${
-                motivo === m ? 'bg-marca text-zinc-950 ring-marca' : 'text-zinc-300 ring-zinc-700 hover:bg-zinc-800'
+                motivo === m ? 'bg-marca text-texto ring-marca' : 'text-texto ring-borde hover:bg-suave'
               }`}
             >
               {m}

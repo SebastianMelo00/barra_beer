@@ -16,7 +16,7 @@ export default function LoginPage() {
           priority
           placeholder="blur"
           sizes="224px"
-          className="mx-auto mb-6 size-56 rounded-3xl shadow-2xl shadow-marca/10 ring-1 ring-zinc-800"
+          className="mx-auto mb-6 size-56 rounded-3xl shadow-2xl shadow-marca/10 ring-1 ring-borde"
         />
         <h1 className="sr-only">La Barra Beer</h1>
         <Suspense>

@@ -61,3 +61,38 @@ from (values
 ) as v (nombre, base, orden)
 join public.productos p on p.nombre = v.base
 on conflict do nothing;
+
+-- Imágenes de los productos (archivos en public/productos).
+update public.productos p
+   set imagen = v.imagen
+  from (values
+  ('Club Colombia Dorada', '/productos/club-colombia-dorada.webp'),
+  ('Agua', '/productos/agua.webp'),
+  ('Agua con gas', '/productos/agua-con-gas.webp'),
+  ('Águila', '/productos/aguila.webp'),
+  ('Águila Light', '/productos/aguila-light.webp'),
+  ('Botella Aguardiente Amarillo', '/productos/botella-aguardiente-amarillo.webp'),
+  ('Bretaña', '/productos/bretana.webp'),
+  ('Budweiser', '/productos/budweiser.webp'),
+  ('Lucky Blanco', '/productos/lucky-blanco.webp'),
+  ('Marlboro Fusión', '/productos/marlboro-fusion.webp'),
+  ('Marlboro Rojo', '/productos/marlboro-rojo.webp'),
+  ('Marlboro Sandía', '/productos/marlboro-sandia.webp'),
+  ('Mustang', '/productos/mustang.webp'),
+  ('Coca-Cola', '/productos/coca-cola.webp'),
+  ('Corona', '/productos/corona.webp'),
+  ('Coronita', '/productos/coronita.webp'),
+  ('Costeña Bacana', '/productos/costena-bacana.webp'),
+  ('Gatorade', '/productos/gatorade.webp'),
+  ('Heineken', '/productos/heineken.webp'),
+  ('Media Aguardiente Amarillo', '/productos/media-aguardiente-amarillo.webp'),
+  ('Media Antioqueño Azul', '/productos/media-antioqueno-azul.webp'),
+  ('Media Néctar Rojo', '/productos/media-nectar-rojo.webp'),
+  ('Media Néctar Verde', '/productos/media-nectar-verde.webp'),
+  ('Poker', '/productos/poker.webp'),
+  ('Six pack Águila', '/productos/six-pack-aguila.webp'),
+  ('Six pack Poker', '/productos/six-pack-poker.webp'),
+  ('Todo Rico Natural', '/productos/todo-rico-natural.webp'),
+  ('Todo Rico BBQ', '/productos/todo-rico-bbq.webp')
+  ) as v (nombre, imagen)
+ where p.nombre = v.nombre and p.imagen is null;

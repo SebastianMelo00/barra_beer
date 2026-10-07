@@ -26,7 +26,7 @@ export function CampoCantidad({
         type="button"
         onClick={() => onCambio(valor === null ? null : Math.max(min, valor - 1))}
         aria-label={`Restar uno a ${etiqueta}`}
-        className="grid size-10 shrink-0 place-items-center rounded-lg bg-zinc-800 text-xl font-bold hover:bg-zinc-700 active:bg-zinc-600"
+        className="grid size-10 shrink-0 place-items-center rounded-lg bg-suave text-xl font-bold hover:bg-suave-2 active:bg-suave-2"
       >
         −
       </button>
@@ -43,13 +43,13 @@ export function CampoCantidad({
           onCambio(Number.isNaN(n) ? null : Math.max(min, n));
         }}
         onFocus={(e) => e.target.select()}
-        className="h-10 w-16 rounded-lg border border-zinc-700 bg-zinc-900 text-center text-base font-semibold text-zinc-100 placeholder:text-zinc-600 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/30"
+        className="h-10 w-16 rounded-lg border border-borde bg-superficie text-center text-base font-semibold text-texto placeholder:text-tenue/70 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/30"
       />
       <button
         type="button"
         onClick={() => cambiar(actual + 1)}
         aria-label={`Sumar uno a ${etiqueta}`}
-        className="grid size-10 shrink-0 place-items-center rounded-lg bg-zinc-800 text-xl font-bold hover:bg-zinc-700 active:bg-zinc-600"
+        className="grid size-10 shrink-0 place-items-center rounded-lg bg-suave text-xl font-bold hover:bg-suave-2 active:bg-suave-2"
       >
         +
       </button>

@@ -38,17 +38,17 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) onCerrar();
       }}
-      className={`m-auto max-h-[92dvh] w-[calc(100%-1.5rem)] ${anchos[ancho]} overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-0 text-zinc-100 shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm`}
+      className={`m-auto max-h-[92dvh] w-[calc(100%-1.5rem)] ${anchos[ancho]} overflow-hidden rounded-2xl border border-borde bg-superficie p-0 text-texto shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm`}
     >
       {abierto ? (
         <div className="flex max-h-[92dvh] flex-col">
-          <div className="flex items-center justify-between gap-4 border-b border-zinc-800 px-5 py-4">
+          <div className="flex items-center justify-between gap-4 border-b border-borde px-5 py-4">
             <h2 className="text-lg font-bold">{titulo}</h2>
             <button
               type="button"
               onClick={onCerrar}
               aria-label="Cerrar"
-              className="grid size-9 place-items-center rounded-lg text-2xl leading-none text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+              className="grid size-9 place-items-center rounded-lg text-2xl leading-none text-tenue hover:bg-suave hover:text-texto"
             >
               ×
             </button>
