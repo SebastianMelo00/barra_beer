@@ -101,6 +101,12 @@ export function PanelMesa({ mesaId }: { mesaId: number }) {
   }, [cargar]);
   useTiempoReal(['cuentas', 'cuenta_items', 'productos'], recargar);
 
+  // Título de la pestaña con el nombre de la mesa.
+  const nombreMesa = datos?.mesa?.nombre;
+  useEffect(() => {
+    if (nombreMesa) document.title = `${nombreMesa} · La Barra Beer`;
+  }, [nombreMesa]);
+
   const enviar = useCallback(() => {
     const lote = [...porEnviar.current.entries()];
     porEnviar.current.clear();

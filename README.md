@@ -87,6 +87,41 @@ npm run dev
 
 Abre http://localhost:3000.
 
+## Despliegue y verificación (lista de chequeo)
+
+**Supabase**
+1. Migraciones 1 a 8 aplicadas (integración con GitHub o SQL Editor, en orden).
+2. `supabase/seed.sql` ejecutado en el SQL Editor.
+3. *Authentication → Sign In / Providers*: Email activo y **"Allow new users to sign up"
+   apagado**. En *Authentication → Policies/Settings*, contraseña mínima de 8 caracteres.
+4. Usuarios creados y con perfil (SQL de la sección "Usuarios").
+5. *Database → Publications → supabase_realtime*: deben aparecer productos, turnos,
+   cuentas, cuenta_items, pagos, movimientos_inv, auditoria_items y actividad
+   (lo hace la migración 5). Sin esto el dashboard no se actualiza en vivo.
+6. *Authentication → URL Configuration → Site URL*: la dirección de Vercel.
+
+**Verificar desde tu computador** (con `.env.local` lleno):
+
+```bash
+npm run verificar
+```
+
+Revisa que estén las tablas y funciones. Si además agregas a `.env.local` las líneas
+`OPERADOR_EMAIL=` y `OPERADOR_PASSWORD=` del usuario de caja, intenta saltarse las
+reglas llamando a Supabase directamente (cambiar precios o stock, crear productos,
+volverse admin, escribir pagos, anular, ajustar, ver turnos anteriores o el dashboard)
+y confirma que todo es rechazado. Con `ADMIN_EMAIL` y `ADMIN_PASSWORD` revisa también
+a la admin. No cambia datos. Al terminar, borra esas líneas de `.env.local`.
+
+**Vercel**
+1. *Settings → Git*: repositorio `SebastianMelo00/barra_beer`, rama de producción `main`.
+2. *Settings → Environment Variables*: `NEXT_PUBLIC_SUPABASE_URL` y
+   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Production, Preview y Development).
+3. *Settings → Functions → Function Region*: la misma región del proyecto de Supabase
+   (así cada pantalla responde más rápido).
+4. *Deployments → Redeploy* después de agregar las variables.
+5. En el celular de la dueña: abrir la dirección de Vercel → "Agregar a pantalla de inicio".
+
 ## Cómo está organizado
 
 ```
@@ -94,7 +129,12 @@ app/
   login/                     ingreso
   (operador)/mesas, turno, inventario    pantallas de caja (computador)
   (admin)/dashboard, productos, turnos   pantallas de la dueña (celular)
-components/ui/               componentes propios (botones, campos, marco)
+components/
+  ui/                        botones, campos, modal, notificaciones, marco
+  mesas/, cuentas/, pagos/   mesas, cuentas, cobros y venta rápida
+  turno/, dashboard/         turno, historial y dashboard en vivo
+  productos/, inventario/    productos, stock, entradas, mermas e historial
+scripts/verificar-supabase.mjs  verificación de instalación y seguridad
 lib/supabase/                clientes de navegador, servidor y proxy
 lib/types.ts, lib/formato.ts tipos de las tablas, formato COP y fechas
 proxy.ts                     protección de rutas por rol
@@ -115,6 +155,12 @@ supabase/migrations/, seed.sql
 - El operador solo ve los datos del **turno abierto**; la admin ve todo el
   historial. El feed de actividad es solo para la admin.
 - Un usuario sin perfil (o desactivado) no ve ni puede hacer nada.
+- Todas las tablas tienen RLS; todas las funciones privilegiadas fijan `search_path`;
+  el rol anónimo no puede leer ni ejecutar nada; la vista del historial usa
+  `security_invoker` para respetar el RLS de quien consulta.
+- Cabeceras HTTP: la app no se puede incrustar en otros sitios (`frame-ancestors 'none'`),
+  `nosniff`, `Referrer-Policy` y sin cámara/micrófono/ubicación.
+- `npm run verificar` prueba todo esto contra tu Supabase real (ver "Despliegue").
 
 | Regla | Dónde se hace cumplir |
 | --- | --- |
