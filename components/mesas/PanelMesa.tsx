@@ -258,7 +258,7 @@ export function PanelMesa({ mesaId }: { mesaId: number }) {
 
           {cuentaSel ? (
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-              <aside className="lg:sticky lg:top-20 lg:order-2">
+              <aside className="min-w-0 lg:sticky lg:top-20 lg:order-2">
                 <DetalleCuenta
                   cuenta={cuentaSel}
                   items={datos.items.filter((i) => i.cuenta_id === cuentaSel.id)}
@@ -271,7 +271,7 @@ export function PanelMesa({ mesaId }: { mesaId: number }) {
                   onMover={(item) => setDialogo({ tipo: 'mover', item })}
                 />
               </aside>
-              <div className="lg:order-1">
+              <div className="min-w-0 lg:order-1">
                 <SelectorProductos productos={datos.productos} onElegir={agregar} />
               </div>
             </div>

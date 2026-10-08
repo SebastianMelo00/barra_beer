@@ -67,7 +67,7 @@ export function PanelMesas() {
             {ocupadas} de {datos.mesas.length} ocupadas · por cobrar {pesos(saldoTotal)}
           </p>
         </div>
-        <Boton tamano="xl" onClick={() => setVentaRapida(true)} className="min-w-64 text-xl tracking-wide">
+        <Boton tamano="xl" onClick={() => setVentaRapida(true)} className="w-full text-xl tracking-wide sm:w-auto sm:min-w-64">
           ⚡ VENTA RÁPIDA
         </Boton>
       </div>
@@ -83,12 +83,12 @@ export function PanelMesas() {
               key={m.id}
               href={`/mesas/${m.id}`}
               prefetch
-              className={`flex min-h-36 flex-col justify-between rounded-2xl border-2 p-4 shadow-sm transition hover:shadow-md active:scale-[0.98] ${
+              className={`flex min-h-32 flex-col justify-between gap-2 rounded-2xl border-2 p-3 sm:min-h-36 sm:p-4 shadow-sm transition hover:shadow-md active:scale-[0.98] ${
                 ocupada ? 'border-marca bg-marca/10' : 'border-borde bg-superficie hover:border-marca/50'
               }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="text-xl font-black">{m.nombre}</span>
+              <div className="flex flex-wrap items-start justify-between gap-1">
+                <span className="whitespace-nowrap text-xl font-black">{m.nombre}</span>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
                     ocupada ? 'bg-marca text-texto' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'

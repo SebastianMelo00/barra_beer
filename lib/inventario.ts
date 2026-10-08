@@ -53,9 +53,26 @@ export function agruparPorCategoria<T extends Pick<Producto, 'categoria' | 'orde
 export function normalizar(texto: string) {
   return texto
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim();
+}
+
+/**
+ * El producto que mejor coincide con lo escrito: nombre exacto, luego nombre
+ * que empieza igual, luego alguna palabra que empieza igual, luego el resto.
+ */
+export function mejorCoincidencia<T extends Pick<Producto, 'nombre' | 'orden'>>(productos: T[], busqueda: string): T | null {
+  const q = normalizar(busqueda);
+  if (!q) return null;
+  const puntaje = (p: T) => {
+    const n = normalizar(p.nombre);
+    if (n === q) return 0;
+    if (n.startsWith(q)) return 1;
+    if (n.split(/\s+/).some((palabra) => palabra.startsWith(q))) return 2;
+    return 3;
+  };
+  return [...productos].sort((a, b) => puntaje(a) - puntaje(b) || a.orden - b.orden)[0] ?? null;
 }
 
 export function coincide(p: Pick<Producto, 'nombre' | 'categoria'>, busqueda: string) {

@@ -3,7 +3,7 @@
 import { useState, type KeyboardEvent } from 'react';
 import { ImagenProducto } from '@/components/ui/ImagenProducto';
 import { pesos } from '@/lib/formato';
-import { agruparPorCategoria, coincide, unidadesDerivado } from '@/lib/inventario';
+import { agruparPorCategoria, coincide, mejorCoincidencia, unidadesDerivado } from '@/lib/inventario';
 import type { Producto } from '@/lib/types';
 
 // Botones grandes con foto: un clic agrega una unidad, varios clics suman.
@@ -13,11 +13,13 @@ export function SelectorProductos({
   onElegir,
   enCarrito = {},
   columnas = 'normal',
+  enfocarBuscador = false,
 }: {
   productos: Producto[];
   onElegir: (p: Producto) => void;
   enCarrito?: Record<number, number>; // cantidades ya elegidas, para mostrarlas sobre el botón
   columnas?: 'normal' | 'compacta';
+  enfocarBuscador?: boolean; // el buscador recibe el foco al abrir la ventana
 }) {
   const [busqueda, setBusqueda] = useState('');
   const [categoria, setCategoria] = useState<string | null>(null);
@@ -27,6 +29,8 @@ export function SelectorProductos({
   const categorias = agruparPorCategoria(activos).map((g) => g.categoria);
   const visibles = activos.filter((p) => coincide(p, busqueda) && (busqueda || !categoria || p.categoria === categoria));
   const grupos = agruparPorCategoria(visibles);
+  // Lo que agrega Enter: la mejor coincidencia ("agua" → Agua, no Aguardiente).
+  const objetivo = busqueda ? mejorCoincidencia(visibles, busqueda) : null;
 
   function disponible(p: Producto) {
     if (p.descuenta_de === null) return p.stock_actual;
@@ -36,9 +40,8 @@ export function SelectorProductos({
   function alTeclear(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const primero = grupos[0]?.items[0];
-      if (primero) {
-        onElegir(primero);
+      if (objetivo) {
+        onElegir(objetivo);
         setBusqueda('');
       }
     }
@@ -54,6 +57,7 @@ export function SelectorProductos({
         onKeyDown={alTeclear}
         placeholder="Buscar producto… (Enter agrega el primero)"
         aria-label="Buscar producto"
+        data-autofocus={enfocarBuscador || undefined}
         className="h-12 w-full rounded-xl border border-borde bg-superficie px-4 text-base placeholder:text-tenue/70 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/30"
       />
 
@@ -90,7 +94,9 @@ export function SelectorProductos({
                   key={p.id}
                   type="button"
                   onClick={() => onElegir(p)}
-                  className="relative flex flex-col items-center gap-1 rounded-2xl border border-borde bg-superficie p-2 pb-2.5 text-center shadow-sm transition active:scale-[0.97] hover:border-marca hover:shadow"
+                  className={`relative flex flex-col items-center gap-1 rounded-2xl border bg-superficie p-2 pb-2.5 text-center shadow-sm transition active:scale-[0.97] hover:border-marca hover:shadow ${
+                    objetivo?.id === p.id ? 'border-marca ring-2 ring-marca' : 'border-borde'
+                  }`}
                 >
                   <ImagenProducto producto={p} tamano={64} className="ring-0" />
                   <span className="line-clamp-2 min-h-[2.5em] text-sm font-semibold leading-tight">{p.nombre}</span>

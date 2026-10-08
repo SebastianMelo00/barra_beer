@@ -49,7 +49,7 @@ export function HistorialTurnos() {
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="font-bold capitalize">{fecha(t.inicio)}</p>
+                  <p className="font-bold first-letter:uppercase">{fecha(t.inicio)}</p>
                   <p className="text-sm text-tenue">
                     {hora(t.inicio)} – {t.fin ? hora(t.fin) : 'en curso'} · {t.operador ?? '—'}
                   </p>

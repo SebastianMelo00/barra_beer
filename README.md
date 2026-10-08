@@ -38,6 +38,7 @@ Las migraciones están en `supabase/migrations/` y se aplican **en este orden**:
 4. `20261007200300_seguridad.sql` — RLS y permisos
 5. `20261007200400_realtime.sql` — tablas en tiempo real
 6. `20261008100000_inventario_lotes.sql` — entradas y conteos de varios productos a la vez (Fase 2)
+7. `20261009100000_fase3_imagenes_turnos.sql` — imagen de cada producto y resumen de turnos (Fase 3)
 
 **Opción A — integración Supabase ↔ GitHub (recomendada).** En Supabase →
 *Project Settings → Integrations → GitHub*, verifica que el repositorio esté
@@ -167,6 +168,34 @@ supabase/migrations/, seed.sql
 - **Historial** (admin): todos los movimientos, filtrables por producto (incluye los
   six packs del producto base), tipo y fechas. Caja solo ve los de su turno.
 - Admin ve además el valor del inventario a costo.
+
+### Turno (`/turno`)
+- Abrir turno con la base de caja (también aparece directo en Mesas si no hay turno).
+- Resumen en vivo: total cobrado y por método (Efectivo, Daviplata, Bre-B), efectivo
+  esperado en caja y cuentas abiertas.
+- Cerrar turno: se escribe el efectivo contado y se ve al instante si sobra o falta.
+  No deja cerrar con cuentas con saldo; las vacías o ya pagadas por abonos se cierran
+  solas. Al final muestra el resumen y recuerda verificar Daviplata y Bre-B en el celular.
+- En la barra superior siempre se ve si hay turno abierto (punto verde) o no.
+
+### Mesas (`/mesas` y `/mesas/[id]`)
+- Cuadrícula de Mesa 1 a 9 + Barra: libre/ocupada, cuentas, saldo y tiempo abierta.
+- Botón grande **VENTA RÁPIDA**: productos, método de pago, vueltas y cobrar.
+- En la mesa: pestañas con las cuentas abiertas + "Nueva cuenta" (nombre opcional).
+  Si la mesa está libre, se abre la primera cuenta con un Enter.
+- Productos con foto por categoría. Un clic agrega; varios clics suman y se guardan
+  agrupados en segundo plano, así se ven al instante. En el buscador, Enter agrega la
+  mejor coincidencia (resaltada).
+- Por ítem: **−** quitar (con motivo) y **⇄** mover a otra cuenta de la mesa o a una nueva.
+- **COBRAR** (todo el saldo, cierra la cuenta), **ABONAR** (cobro por rondas: aunque
+  cubra todo, la cuenta sigue abierta "al día"), **DIVIDIR** en N partes redondeadas
+  hacia arriba a $ 100 (la última ajusta). En efectivo calcula las vueltas.
+- Admin: **Anular** con motivo, devolviendo o no el stock (cliente que se fue sin pagar).
+- Al cerrar la última cuenta, vuelve solo a Mesas.
+
+### Historial de turnos (`/turnos`, solo admin)
+- Cada turno con total por método, cuadre (cuadró / sobró / faltó), cuentas anuladas
+  e ítems quitados; al tocarlo muestra el detalle con motivos, quién y a qué hora.
 
 ### En el celular
 - Menú desplegable (☰) con botones grandes.

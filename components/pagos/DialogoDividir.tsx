@@ -70,6 +70,8 @@ export function DialogoDividir({ cuenta, onPago, onListo }: {
               type="button"
               disabled={pagadas > 0 || n * 100 > saldoInicial}
               onClick={() => elegirN(n)}
+              aria-label={`Dividir entre ${n} personas`}
+              aria-pressed={partes?.length === n}
               className={`h-12 rounded-xl border-2 text-lg font-bold disabled:opacity-40 ${
                 partes?.length === n ? 'border-marca bg-marca/15 text-cafe' : 'border-borde bg-superficie hover:bg-suave'
               }`}
@@ -102,6 +104,7 @@ export function DialogoDividir({ cuenta, onPago, onListo }: {
                       type="button"
                       disabled={pagando !== null}
                       onClick={() => pagarParte(i, m)}
+                      aria-label={`Pagar parte ${i + 1} con ${TEXTO_METODO[m]}`}
                       className="h-11 rounded-lg border border-borde bg-superficie px-3 text-sm font-semibold hover:border-marca hover:bg-marca/10 disabled:opacity-50"
                     >
                       {pagando === i ? '…' : TEXTO_METODO[m]}

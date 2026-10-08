@@ -57,11 +57,11 @@ export function VentaRapida({ productos, onListo }: { productos: Producto[]; onL
 
   return (
     <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="max-h-[70dvh] overflow-y-auto pr-1">
-        <SelectorProductos productos={productos} onElegir={(p) => cambiar(p.id, 1)} enCarrito={carrito} columnas="compacta" />
+      <div className="max-h-[70dvh] min-w-0 overflow-y-auto pr-1">
+        <SelectorProductos productos={productos} onElegir={(p) => cambiar(p.id, 1)} enCarrito={carrito} columnas="compacta" enfocarBuscador />
       </div>
 
-      <div className="flex flex-col gap-3 md:sticky md:top-0">
+      <div className="flex min-w-0 flex-col gap-3 md:sticky md:top-0">
         <h3 className="font-bold">Productos</h3>
         {lineas.length === 0 ? (
           <p className="rounded-xl bg-suave p-4 text-center text-sm text-tenue">Toca los productos que pidió el cliente.</p>
