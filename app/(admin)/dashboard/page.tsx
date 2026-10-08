@@ -1,10 +1,8 @@
-import { EnConstruccion } from '@/components/ui/EnConstruccion';
-import { VerificacionConexion } from '@/components/ui/VerificacionConexion';
+import type { Metadata } from 'next';
+import { PanelDashboard } from '@/components/dashboard/PanelDashboard';
+
+export const metadata: Metadata = { title: 'Dashboard · La Barra Beer' };
 
 export default function DashboardPage() {
-  return (
-    <EnConstruccion titulo="Dashboard" fase={4}>
-      <VerificacionConexion />
-    </EnConstruccion>
-  );
+  return <PanelDashboard />;
 }

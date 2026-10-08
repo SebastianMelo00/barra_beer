@@ -183,3 +183,29 @@ export const METODOS_PAGO: { valor: MetodoPago; texto: string }[] = [
   { valor: 'daviplata', texto: 'Daviplata' },
   { valor: 'bre_b', texto: 'Bre-B' },
 ];
+
+// Respuesta de la RPC datos_dashboard (Fase 4).
+export type DatosDashboard = {
+  turno: ResumenTurno | null;
+  consumo: number;
+  cuentas_abiertas: {
+    id: number;
+    nombre: string;
+    mesa_id: number | null;
+    mesa: string | null;
+    total: number;
+    pagado: number;
+    abierta_en: string;
+  }[];
+  mas_vendidos: { producto_id: number; nombre: string; imagen: string | null; cantidad: number; total: number }[];
+  stock_bajo: { producto_id: number; nombre: string; imagen: string | null; stock_actual: number; stock_minimo: number }[];
+  ventas_sin_stock: {
+    id: number;
+    creado_en: string;
+    nombre: string;
+    cantidad: number;
+    stock_resultante: number;
+    cuenta: string | null;
+  }[];
+  generado_en: string;
+};

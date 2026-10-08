@@ -39,6 +39,7 @@ Las migraciones están en `supabase/migrations/` y se aplican **en este orden**:
 5. `20261007200400_realtime.sql` — tablas en tiempo real
 6. `20261008100000_inventario_lotes.sql` — entradas y conteos de varios productos a la vez (Fase 2)
 7. `20261009100000_fase3_imagenes_turnos.sql` — imagen de cada producto y resumen de turnos (Fase 3)
+8. `20261010100000_dashboard.sql` — datos del dashboard en una sola llamada (Fase 4)
 
 **Opción A — integración Supabase ↔ GitHub (recomendada).** En Supabase →
 *Project Settings → Integrations → GitHub*, verifica que el repositorio esté
@@ -145,6 +146,7 @@ supabase/migrations/, seed.sql
 | `ajustar_stock(producto_id, stock_real, motivo)` | admin | Ajuste por conteo físico |
 | `registrar_entrada_lote(items, motivo?)` | staff | Entrada de mercancía de varios productos |
 | `ajustar_stock_lote(items, motivo?)` | admin | Conteo físico de varios productos |
+| `datos_dashboard()` | admin | Todo lo del dashboard: turno, consumo, mesas, más vendidos, alertas |
 
 ## Pantallas
 
@@ -168,6 +170,18 @@ supabase/migrations/, seed.sql
 - **Historial** (admin): todos los movimientos, filtrables por producto (incluye los
   six packs del producto base), tipo y fechas. Caja solo ve los de su turno.
 - Admin ve además el valor del inventario a costo.
+
+### Dashboard (`/dashboard`, solo admin — su pantalla inicial)
+- Se actualiza solo con Supabase Realtime, sin recargar. Arriba dice **En vivo** (o
+  "Reconectando…" si se cae el internet; al volver se pone al día sola).
+- Cobrado, por cobrar, consumo del turno y efectivo que debería haber en caja.
+- Cobrado por método (Efectivo, Daviplata, Bre-B) con barras.
+- Alertas: ventas hechas sin stock y productos con stock bajo.
+- Mesas abiertas con sus cuentas, saldos y tiempo; tocar una mesa la abre.
+- Más vendidos del turno (sin contar cuentas anuladas).
+- Actividad en vivo: ventas, pagos, ítems quitados o movidos, anulaciones, mermas,
+  entradas y apertura/cierre de turno; lo nuevo se resalta un momento.
+- Sin turno abierto: resumen del último turno cerrado y su cuadre.
 
 ### Turno (`/turno`)
 - Abrir turno con la base de caja (también aparece directo en Mesas si no hay turno).

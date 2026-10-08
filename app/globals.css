@@ -43,3 +43,16 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Resalta por un momento lo que acaba de llegar en vivo (dashboard). */
+@keyframes resaltar {
+  from {
+    background-color: rgb(255 145 76 / 0.28);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+.recien-llegado {
+  animation: resaltar 2.5s ease-out;
+}

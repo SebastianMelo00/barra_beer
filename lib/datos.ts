@@ -44,8 +44,10 @@ export function useCarga<T>(cargar: () => Promise<T>) {
  * Escucha cambios en vivo (Supabase Realtime) de las tablas indicadas y llama
  * `alCambiar` (agrupando ráfagas). También recarga al volver a la pestaña o
  * al reconectarse, para no perder cambios ocurridos sin conexión.
+ * Devuelve si la conexión en vivo está activa.
  */
 export function useTiempoReal(tablas: string[], alCambiar: () => void) {
+  const [conectado, setConectado] = useState(false);
   const alCambiarRef = useRef(alCambiar);
   const clave = tablas.join(',');
 
@@ -68,6 +70,7 @@ export function useTiempoReal(tablas: string[], alCambiar: () => void) {
       canal.on('postgres_changes', { event: '*', schema: 'public', table: tabla }, avisar);
     }
     canal.subscribe((estado) => {
+      setConectado(estado === 'SUBSCRIBED');
       if (estado !== 'SUBSCRIBED') return;
       if (conectadoAntes) avisar(); // reconexión: pudo haber cambios
       conectadoAntes = true;
@@ -84,4 +87,6 @@ export function useTiempoReal(tablas: string[], alCambiar: () => void) {
       void supabase.removeChannel(canal);
     };
   }, [clave]);
+
+  return conectado;
 }
